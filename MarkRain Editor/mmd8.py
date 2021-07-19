@@ -3,50 +3,9 @@ import time
 import sys
 import random
 import webview
-# import pymmd
 import markdown
 from html import unescape
 
-
-style_start = """
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8"/>
-<style>
-table {
-    border-collapse: collapse;
-}
-table td, colgroup, tr, th, tbody, thead{
-    border: 1px solid #aaa;
-    padding: 5px;
-}
-"""
-
-style_end = """
-caption.source {
-  caption-side: bottom;
-  font-style: italic;
-}
-body {margin: 20px;}
-</style>
-</head>
-<body>
-<div>
-<button onClick="getRandomNumber()">open file</button><br/>
-</div>
-"""
-
-
-html_foot = """
-<script>
-    function getRandomNumber() {
-        pywebview.api.getRandomNumber()
-    }
-</script>
-</body>
-</html>
-"""
 
 html = """<!DOCTYPE html>
 <html lang="en">
@@ -55,17 +14,22 @@ html = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grid #2</title>
 <style type="text/css">
+@font-face {
+    font-family: Chinese Quote;
+    src: local("PingFang SC"), local("SimSun");
+    unicode-range: U+2018,U+2019,U+201c,U+201d;
+}
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 body {
-    font-family: 'Quicksand', sans-serif;
+    font-family: Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-size: 13px;
 }
 .container {
     height: 100vh;
-    font-weight: bold;
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: 50px 1fr 1fr 50px;
@@ -86,7 +50,7 @@ body {
     grid-column: 1/span 2;
 }
 .content-large {
-  font-family: 'SHS Monaco NoAdjust';
+  font-family: 'SHS Monaco Adjusted';
   font-size: 11px;
   font-weight: normal;
   overflow: auto;
@@ -97,12 +61,32 @@ body {
     padding: 0;
     border: none;
 }
-.content-small {
+.content-view {
     grid-row-start: 2;
     grid-row-end: 4;
     grid-column: 3/span 5;
     overflow: auto;
 }
+#preview table {
+    border-collapse: collapse;
+    margin: 3em auto;
+}
+#preview table td, table colgroup, table tr,table th, table tbody, table thead{
+    border: 1px solid #aaa;
+    padding: 5px;
+　　vertical-align:middle;
+}
+#preview table caption {
+    text-align: center;
+    font-weight: bold;
+    font-size: 15px;
+}
+#preview table caption.source {
+  caption-side: bottom;
+  font-style: italic;
+  font-size: 11px;
+}
+
 .footer {
     grid-column: 1/span 6;
 }
@@ -113,7 +97,7 @@ body {
     <div class="header">Header</div>
     <!-- <div class="content-large" contenteditable="true" id="editor">Navigation</div> -->
     <textarea class="content-large" id="editor">Navigation</textarea>
-    <div class="content-small" id="preview"></div>
+    <div class="content-view" id="preview"></div>
     <div class="footer">
       <button onClick="getRandomNumber()">TO</button>
     </div>
@@ -129,8 +113,6 @@ body {
 
     function getRandomNumber() {
         var container = document.getElementById('editor');
-        // alert(container.innerText);
-        // pywebview.api.getRandomNumber();
         pywebview.api.text(container.value).then(showResponse);
     }
 </script>
