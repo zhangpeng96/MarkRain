@@ -1,6 +1,5 @@
 import os
 import markdown
-from lxml import etree
 from bs4 import BeautifulSoup
 # from lxml.builder import E
 
@@ -42,14 +41,27 @@ class FileIO():
         with open(meta['path'], 'r', encoding='utf-8') as f:
             markdown_text = f.read()
         html = self.markdown.convert(markdown_text)
+        """ 方案一 以yamlmeta为标准
         if self.markdown.Meta:
-            if self.markdown.Meta['title']:
-                html = '<h1>{}</h1>\n'.format(self.markdown.Meta['title']) + html
+            if not self.markdown.Meta['title']:
+                self.markdown.Meta['title'] = meta['filename']
+        else:
+            self.markdown.Meta = {}
+            self.markdown.Meta['title'] = meta['filename']
+        html = '<h1>{}</h1>\n'.format(self.markdown.Meta['title']) + html
+        """
+
+        if self.markdown.Meta:
+            if self.markdown.Meta.get('title'):
+                self.file_meta[file_id]['title'] = self.markdown.Meta['title']
+            else:
+                self.file_meta[file_id]['title'] = self.file_meta[file_id]['filename']
+        else:
+            self.file_meta[file_id]['title'] = self.file_meta[file_id]['filename']
+        html = '<h1>{}</h1>\n'.format(self.file_meta[file_id]['title']) + html
         # html = etree.tostring(etree.HTML(html), pretty_print=True).decode('utf-8')
         # html = etree.tostring(E.html(etree.fromstring(html))).decode('utf-8')
-        elem = etree.HTML(html)
         # print(elem)
-        html = etree.tostring(elem, pretty_print=True, encoding=str)
         # html = ''
         # html = BeautifulSoup(html, "html.parser")
         # return html.prettify()
