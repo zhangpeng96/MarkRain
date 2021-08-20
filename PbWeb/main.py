@@ -1,8 +1,10 @@
 import tornado.ioloop
 import tornado.web
 import tornado.autoreload
-
+from random import randint
 from fileio import FileIO
+import os
+from lxml import etree
 
 io = FileIO()
 
@@ -14,19 +16,41 @@ class MainHandler(tornado.web.RequestHandler):
 
 
 class ViewHandler(tornado.web.RequestHandler):
+    def parse_html(self, file_id):
+        article = io.get_file(file_id)
+        html = """<!DOCTYPE html>
+<html>
+<head>
+  <title>{}</title>
+  <link rel="stylesheet" href="static/han.css?{}"/>
+</head>
+<body>
+  <div>
+  <p>{}</p>
+  </div>
+  <div id="write">
+    {}
+  </div>
+</body>
+</html>""".format(io.file_meta[file_id]['title'], randint(1000, 9999),io.file_meta[file_id]['path'], article)
+        dom = etree.HTML(html)
+        return etree.tostring(dom, pretty_print=True, encoding=str)
+
     def get(self):
         self.set_header("Access-Control-Allow-Origin", "*")
         file_id = int(self.get_query_argument("id", strip=True))
-        html = '<link rel="stylesheet" href="https://typo.sofi.sh/typo.css"/>\n'
-        html += io.get_file(file_id)
-        self.write(html)
+        self.write(self.parse_html(file_id))
 
 
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/view", ViewHandler),
-    ], debug=True)
+    ],
+        static_path=os.path.join(os.path.dirname(__file__), "static"),
+        static_url_prefix="/static/",
+        debug=True
+    )
 
 
 if __name__ == "__main__":
