@@ -18,11 +18,12 @@ class MainHandler(tornado.web.RequestHandler):
 class ViewHandler(tornado.web.RequestHandler):
     def parse_html(self, file_id):
         article = io.get_file(file_id)
-        html = """<!DOCTYPE html>
+        html = """
 <html>
 <head>
   <title>{}</title>
   <link rel="stylesheet" href="static/han.css?{}"/>
+  <link rel="stylesheet" href="https://cdn.mowchan.me/libs/katex/katex.min.css">
 </head>
 <body>
   <div>
@@ -31,10 +32,24 @@ class ViewHandler(tornado.web.RequestHandler):
   <div id="write">
     {}
   </div>
+  <script src="https://cdn.mowchan.me/libs/katex/katex.min.js"> </script>
+  <script src="https://cdn.mowchan.me/libs/katex/auto-render.min.js"> </script>
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {{
+    renderMathInElement(document.body, {{
+      delimiters: [
+        {{left: "$$", right: "$$", display: true}},
+        {{left: "\\\\[", right: "\\\\]", display: true}},
+        {{left: "\\\\(", right: "\\\\)", display: true}},
+        {{left: "$", right: "$", display: false}}
+      ]
+    }});
+  }});
+  </script>
 </body>
 </html>""".format(io.file_meta[file_id]['title'], randint(1000, 9999),io.file_meta[file_id]['path'], article)
         dom = etree.HTML(html)
-        return etree.tostring(dom, pretty_print=True, encoding=str)
+        return r'<!DOCTYPE html>' + etree.tostring(dom, pretty_print=True, encoding=str)
 
     def get(self):
         self.set_header("Access-Control-Allow-Origin", "*")
