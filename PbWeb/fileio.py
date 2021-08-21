@@ -9,7 +9,7 @@ class FileIO():
         self.file_meta = {}
         self.file_id_count = 1
         self.markdown = markdown.Markdown(
-            extensions=['tables', 'footnotes', 'toc', 'sane_lists', 'fenced_code', 'abbr', 'details', 'figures', 'yaml']
+            extensions=['tables', 'footnotes', 'toc', 'sane_lists', 'fenced_code', 'abbr', 'details', 'figures', 'yaml', 'latex']
         )
 
     def _file_meta_refresh(self):        

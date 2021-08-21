@@ -324,6 +324,17 @@ pre, code, pre tt {
   font-family: Courier, 'Courier New', monospace;
 }
 
+pre {
+  overflow-x: auto;
+}
+
+/* 数学公式 */
+
+.katex {
+  /*padding-left: 0.18em;*/
+  /*padding-right: 0.18em;*/
+}
+
 #write .md-fences {
   border: 1px solid #ddd;
   padding: 1em 0.5em;
